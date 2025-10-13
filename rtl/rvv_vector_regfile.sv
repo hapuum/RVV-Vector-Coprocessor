@@ -29,7 +29,6 @@ module rvv_vector_regfile #(
         if (rst) begin
             for (int i = 0; i < NUM_REGS; i++)
                 regfile[i] <= '0;
-            // regfile[1] <= 512'h0001_0002_0003_0004_0005_0006_0007_0008_0009_000A_000B_000C_000D_000E_000F_0010; // preloaded value for demonstration
         end
         if (rd_we) begin // vector register does not care if we write to v0
             $display("Writing to regfile[%0d] = %h", rd_addr, rd_data);

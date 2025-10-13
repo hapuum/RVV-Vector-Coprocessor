@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
             // Print from most significant word to least
             for (int j = 15; j >= 0; --j) {
                 std::cout << std::hex << std::setfill('0') << std::setw(8)
-                          << top->vreg_out[j];
+                          << top->vreg_out[j] << " ";
             }
             std::cout << std::dec << std::endl;
             for (int k = 0; k < 4; ++k) {

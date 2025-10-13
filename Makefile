@@ -1,7 +1,6 @@
 TOP		   = rvv_vector_top
 RTL        = rtl/rvv_defs.sv rtl/agu.sv rtl/rvv_vector_regfile.sv rtl/rvv_vector_decoder.sv rtl/rvv_vector_top.sv rtl/rvv_vector_system.sv
 TB         = testbench/tb_rvv_vector_top.sv
-VCD        = wave.vcd
 EXE        = sim_$(TOP)
 CFLAGS     = -O2
 VERILATOR_FLAGS = -Wall --cc --trace --exe --build -Wno-UNUSED -Wno-WIDTH -Wno-DECLFILENAME -Wno-VARHIDDEN --Wno-fatal
@@ -29,9 +28,6 @@ iverilog:
 
 run: iverilog
 	vvp tb_rvv_vector_top.vvp
-
-wave: run
-	gtkwave $(VCD) &
 
 .PHONY: sim
 sim: sim_rvv_vector_system
