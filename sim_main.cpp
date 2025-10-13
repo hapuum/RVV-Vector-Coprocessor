@@ -13,7 +13,6 @@ int main(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
     Vrvv_vector_system* top = new Vrvv_vector_system;
 
-    // Optional: Enable waveform tracing
     VerilatedVcdC* tfp = nullptr;
     #ifdef VM_TRACE
         Verilated::traceEverOn(true);
@@ -24,7 +23,7 @@ int main(int argc, char **argv) {
 
     // Reset
     top->rst = 1;
-    top->alu_rst = 1; // NEW: ALU reset asserted
+    top->alu_rst = 1;
     top->clk = 0;
     top->instr = 0;
     top->vl = 8;

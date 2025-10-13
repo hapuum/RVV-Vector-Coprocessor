@@ -607,7 +607,7 @@ module rvv_vector_top #(
             VI_OP: result = vi_operations(vtype, vl, vs2, imm, vmask, vm, opcode);
             default: result = '0;
         endcase
-        $display("alu_operations result: %0h", result);
+        //$display("alu_operations result: %0h", result);
         return result;
 
 
@@ -671,7 +671,7 @@ module rvv_vector_top #(
                 mem_read_data <= unit_stride_load(mem_req.base_addr);
                 mem_ready <= 1;
             end else if (mem_store) begin
-                $display("Store operation: base_addr = %0h, data = %0h", mem_req.base_addr, vs3); // 
+                //$display("Store operation: base_addr = %0h, data = %0h", mem_req.base_addr, vs3); // 
                 //unit_stride_store(mem_req.base_addr, vs1);
                 unit_stride_store(mem_req.base_addr, vs3);
                 mem_ready <= 1;
