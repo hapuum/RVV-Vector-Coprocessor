@@ -9,5 +9,6 @@ To configure this RTL with your own processor:
 - rvv_vector_system.sv contains a example of how one system may be configured.
 
 With ideal vector load/stores and computation setup (such as matrix multiply, vector addition) this can mean up to (512/32 = 16)x speedup per cycle compared to original RISC-V Pipelined Processor.
-As a project not verified through synthesis and purely at RTL level for proof of concept, analysis on synthesis and cycle timing is currently not offered. I might add this in the future and test it on an FPGA. 
+As a project not verified through synthesis and purely at RTL level for proof of concept, analysis on synthesis and cycle timing is currently not offered.
+On Simulation, this has roughly 5.3x speedup in terms of cycle count, but in synthesis the timing constraints will be tighter and will slow down a bit.
 
