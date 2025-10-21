@@ -9,6 +9,7 @@
 vluint64_t main_time = 0;
 double sc_time_stamp() { return main_time; }
 
+
 int main(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
     Vrvv_vector_system* top = new Vrvv_vector_system;

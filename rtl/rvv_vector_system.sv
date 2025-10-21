@@ -44,13 +44,13 @@ module rvv_vector_system(
 
     rvv_vector_regfile #(.VLEN(512), .NUM_REGS(32)) vregfile (
         .clk(clk),
-        .rst(rst), // regfile uses global rst
+        .rst(rst),
         .rs1_addr(vs1),
         .rs2_addr(vs2),
-        .rs3_addr(vs3), // <-- new
+        .rs3_addr(vs3),
         .rs1_data(vreg_rs1),
         .rs2_data(vreg_rs2),
-        .rs3_data(vreg_rs3), // <-- new
+        .rs3_data(vreg_rs3),
         .rd_addr(vd),
         .rd_data(vregfile_wdata),
         .rd_we(vregfile_we)
