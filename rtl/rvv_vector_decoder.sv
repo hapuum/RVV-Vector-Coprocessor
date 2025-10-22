@@ -3,8 +3,8 @@
 module rvv_vector_decoder(
     input  logic        clk,
     input  logic        rst,
+
     input  logic [31:0] instr,
-    input  logic [31:0] vl, // changed from output to input
     output valu_mode_t  valu_mode,
     output vtype_t      vtype,
     output valu_opcode_t opcode,
@@ -79,6 +79,11 @@ module rvv_vector_decoder(
     endfunction
 
     // vtype decoder
+    function automatic logic [31:0] decode_vl(input logic [31:0] instr);
+        // For simplicity, just return a fixed vl for now
+        return 32'd8; // Example fixed vl
+    endfunction
+
     function automatic vtype_t decode_vtype(input logic [9:0] vtype_bits);
         vtype_t vtype;
         vtype.vill  = vtype_bits[9];
@@ -131,6 +136,7 @@ module rvv_vector_decoder(
 
     // Internal vtype register
     vtype_t vtype_reg;
+    logic [31:0] vl;
 
     // Detect vsetvli/vsetvl (opcode 7'b1010111, funct3 3'b111 for vsetvli, 3'b110 for vsetvl)
     // these instructions may need to be moved to execution stage based on user need. 
@@ -147,6 +153,7 @@ module rvv_vector_decoder(
                      new_vtype.vill, new_vtype.vma, new_vtype.vta,
                      8 << new_vtype.vsew, new_vtype.vlmul);
             vtype_reg <= new_vtype;
+            vl <= decode_vl(instr);
         end
     end
 
