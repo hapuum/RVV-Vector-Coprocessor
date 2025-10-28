@@ -19,19 +19,18 @@ module rvv_vector_regfile #(
 );
     logic [VLEN-1:0] regfile [NUM_REGS-1:0];
 
-    // Read logic (combinational)
+    // riscv reads from 3 different vector registers
     assign rs1_data = regfile[rs1_addr];
     assign rs2_data = regfile[rs2_addr];
     assign rs3_data = regfile[rs3_addr];
 
-    // Write logic (sequential)
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             for (int i = 0; i < NUM_REGS; i++)
                 regfile[i] <= '0;
         end
         if (rd_we) begin // vector register does not care if we write to v0
-            $display("Writing to regfile[%0d] = %h", rd_addr, rd_data);
+            //$display("Writing to regfile[%0d] = %h", rd_addr, rd_data);
             regfile[rd_addr] <= rd_data;
         end
     end

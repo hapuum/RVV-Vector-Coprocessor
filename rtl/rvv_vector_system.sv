@@ -23,7 +23,7 @@ module rvv_vector_system(
         .clk(clk),
         .rst(rst),
         .instr(instr),
-        .vl(vl), // pass vl as input
+        .vl(vl),
         .valu_mode(valu_mode),
         .vtype(vtype),
         .opcode(opcode),
@@ -66,14 +66,14 @@ module rvv_vector_system(
         .rst(alu_rst && rst),
         .valu_mode(valu_mode),
         .vtype(vtype),
-        .vl(vl), // pass vl as input
+        .vl(vl),
         .opcode(opcode),
         .vs1(vreg_rs1),
         .vs2(vreg_rs2),
-        .vs3(vreg_rs3), // <-- use the value read from regfile
-        .rs1('0), // For memory ops, you may want to connect a scalar reg file
+        .vs3(vreg_rs3),
+        .rs1('0), // connect to scalar regfile soon
         .imm(imm5),
-        .vmask('0), // Masking not yet wired
+        .vmask('0), // connect from vector regfile to obtain correct vector mask as rs3 on most operations
         .vm(vm),
         .mem_load(mem_load),
         .mem_store(mem_store),
