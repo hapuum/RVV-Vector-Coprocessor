@@ -25,11 +25,17 @@ module rvv_vector_top #(
     input  logic [VLEN-1:0]   vmask,
     input  logic              vm,          // mask enable
 
+
+
     // Memory load/store control
     input  logic              mem_load,    // 1 = vector load
     input  logic              mem_store,   // 1 = vector store
 
     // Outputs
+    output logic              vector_memcache_write_en,
+    output logic              vector_memcache_read_en,
+    output logic [ELEN-1:0]   vector_memcache_addr,
+    output logic [VLEN-1:0]   vector_memcache_wdata,
     output logic [VLEN-1:0]   vreg_out,
     output logic              ready
 );
@@ -613,85 +619,85 @@ module rvv_vector_top #(
 
     endfunction
 
-    // --------------------------------------------------------
-    // Memory Subsystem: 512-bit Vector Memory
-    // --------------------------------------------------------
-    // TEST PURPOSE ONLY. In a real implementation, memory signals would be connected to a data cache, instead of
-    // internal memory doing operations.
-    // Internal memory: array of 512-bit words (64 bytes)
-    localparam MEM_WORDS = MEM_SIZE_BYTES / (VLEN/8);
-    typedef logic [VLEN-1:0] mem_word_t;
-    mem_word_t mem_array [0:MEM_WORDS-1];
+    // // --------------------------------------------------------
+    // // Memory Subsystem: 512-bit Vector Memory
+    // // --------------------------------------------------------
+    // // TEST PURPOSE ONLY. In a real implementation, memory signals would be connected to a data cache, instead of
+    // // internal memory doing operations.
+    // // Internal memory: array of 512-bit words (64 bytes)
+    // localparam MEM_WORDS = MEM_SIZE_BYTES / (VLEN/8);
+    // typedef logic [VLEN-1:0] mem_word_t;
+    // mem_word_t mem_array [0:MEM_WORDS-1];
 
-    // Memory request signals
-    mem_req_t mem_req;
+    // // Memory request signals
+    // mem_req_t mem_req;
 
-    // Ready signal for memory operation
-    logic mem_ready;
+    // // Ready signal for memory operation
+    // logic mem_ready;
 
-    // Temporary register for memory read data
-    vreg_t mem_read_data;
+    // // Temporary register for memory read data
+    // vreg_t mem_read_data;
 
-    // Instantiate AGU
-    logic [63:0] addresses [0:VLEN/64-1];
+    // // Instantiate AGU
+    // logic [63:0] addresses [0:VLEN/64-1];
 
-    agu agu_inst (
-        .req(mem_req),
-        .addresses(addresses)
-    );
+    // agu agu_inst (
+    //     .req(mem_req),
+    //     .addresses(addresses)
+    // );
 
-    // Memory read/write logic
-    // Function for unit stride memory load
-    function automatic vreg_t unit_stride_load(
-        input logic [63:0] base_addr
-    );
-        int word_idx = base_addr[($clog2(MEM_WORDS)+2)-1:3];
-        $display("[LOAD]  addr=0x%0h data=0x%0h", base_addr, mem_array[word_idx]);
-        return mem_array[word_idx];
-    endfunction
+    // // Memory read/write logic
+    // // Function for unit stride memory load
+    // function automatic vreg_t unit_stride_load(
+    //     input logic [63:0] base_addr
+    // );
+    //     int word_idx = base_addr[($clog2(MEM_WORDS)+2)-1:3];
+    //     $display("[LOAD]  addr=0x%0h data=0x%0h", base_addr, mem_array[word_idx]);
+    //     return mem_array[word_idx];
+    // endfunction
 
-    // Task for unit stride memory store
-    task automatic unit_stride_store(
-        input logic [63:0] base_addr,
-        input vreg_t data_in
-    );
-        int word_idx = base_addr[($clog2(MEM_WORDS)+2)-1:3];
-        mem_array[word_idx] <= data_in;
-        $display("[STORE] addr=0x%0h data=0x%0h", base_addr, data_in);
-    endtask
+    // // Task for unit stride memory store
+    // task automatic unit_stride_store(
+    //     input logic [63:0] base_addr,
+    //     input vreg_t data_in
+    // );
+    //     int word_idx = base_addr[($clog2(MEM_WORDS)+2)-1:3];
+    //     mem_array[word_idx] <= data_in;
+    //     $display("[STORE] addr=0x%0h data=0x%0h", base_addr, data_in);
+    // endtask
 
-    // Memory read/write logic
-    always_ff @(posedge clk or posedge rst) begin
-        if (rst) begin
-            mem_ready <= 0;
-            mem_read_data <= '0;
-        end else begin
-            mem_ready <= 0;
-            if (mem_load) begin
-                mem_read_data <= unit_stride_load(mem_req.base_addr);
-                mem_ready <= 1;
-            end else if (mem_store) begin
-                //$display("Store operation: base_addr = %0h, data = %0h", mem_req.base_addr, vs3); // 
-                //unit_stride_store(mem_req.base_addr, vs1);
-                unit_stride_store(mem_req.base_addr, vs3);
-                mem_ready <= 1;
-            end else begin
-                mem_ready <= 1; // No memory operation, ready immediately
-            end
-        end
-    end
+    // // Memory read/write logic
+    // always_ff @(posedge clk or posedge rst) begin
+    //     if (rst) begin
+    //         mem_ready <= 0;
+    //         mem_read_data <= '0;
+    //     end else begin
+    //         mem_ready <= 0;
+    //         if (mem_load) begin
+    //             mem_read_data <= unit_stride_load(mem_req.base_addr);
+    //             mem_ready <= 1;
+    //         end else if (mem_store) begin
+    //             //$display("Store operation: base_addr = %0h, data = %0h", mem_req.base_addr, vs3); // 
+    //             //unit_stride_store(mem_req.base_addr, vs1);
+    //             unit_stride_store(mem_req.base_addr, vs3);
+    //             mem_ready <= 1;
+    //         end else begin
+    //             mem_ready <= 1; // No memory operation, ready immediately
+    //         end
+    //     end
+    // end
 
-    // --------------------------------------------------------
-    // Control Logic: Integrate ALU and Memory Operations
-    // --------------------------------------------------------
+    // // --------------------------------------------------------
+    // // Control Logic: Integrate ALU and Memory Operations
+    // // --------------------------------------------------------
 
-    // Prepare memory request for unit stride accesses
-    always_comb begin
-        mem_req.access_type = UNIT_STRIDE;
-        mem_req.base_addr = rs1;
-        mem_req.stride = 64; // 64 bytes per 512-bit element
-        mem_req.indices = '0;
-    end
+    // // Prepare memory request for unit stride accesses
+    // always_comb begin
+    //     mem_req.access_type = UNIT_STRIDE;
+    //     mem_req.base_addr = rs1;
+    //     mem_req.stride = 64; // 64 bytes per 512-bit element
+    //     mem_req.indices = '0;
+    // end
 
     // Output register and ready signal
     logic [VLEN-1:0] alu_result;
@@ -702,22 +708,23 @@ module rvv_vector_top #(
             vreg_out <= '0;
             ready <= 0;
         end else begin
+            ready <= 0;
+            vreg_out <= 0;
             if (mem_load) begin
                 if (mem_ready) begin
-                    // Apply mask and tail policy after load
-                    vreg_out <= apply_mask_tail(vtype, vl, mem_read_data, vmask, vm);
+                    // ADD MEMORY REQUEST TO CACHE
+                    vector_memcache_read_en <= '1;
+                    vector_memcache_addr <= '0;
                     ready <= 1;
-                end else begin
-                    ready <= 0;
                 end
             end else if (mem_store) begin
-                // Store operation: ready when mem_ready asserted
                 if (mem_ready) begin
+                    // ADD MEMORY REQUEST TO CACHE
+                    vector_memcache_write_en <= '1;
+                    vector_memcache_wdata <= '0; // @TODO: add combinational logic to determine wdata / addr
+                    vector_memcache_addr <= '0;
                     ready <= 1;
-                end else begin
-                    ready <= 0;
                 end
-                vreg_out <= '0; // no output for store
             end else begin
                 // ALU operations
                 vreg_out <= alu_operations(valu_mode, vtype, vl, vs1, vs2, rs1, imm, vmask, vm, opcode);
@@ -725,6 +732,14 @@ module rvv_vector_top #(
             end
         end
     end
+
+    logic [ADDRESS_SIZE - 1 : 0] memory_op_addr;
+    logic [VLEN - 1 : 0] memory_wdata;
+
+    always_comb begin
+        
+    end
+
 
     // --------------------------------------------------------
     // Mask and Tail Policy Application Function

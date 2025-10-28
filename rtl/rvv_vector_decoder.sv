@@ -3,8 +3,8 @@
 module rvv_vector_decoder(
     input  logic        clk,
     input  logic        rst,
-
     input  logic [31:0] instr,
+    
     output valu_mode_t  valu_mode,
     output vtype_t      vtype,
     output valu_opcode_t opcode,
