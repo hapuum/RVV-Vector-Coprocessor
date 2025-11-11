@@ -736,6 +736,9 @@ module rvv_vector_top #(
     logic [ADDRESS_SIZE - 1 : 0] memory_op_addr;
     logic [VLEN - 1 : 0] memory_wdata;
 
+    // find wdata / addr for load/stores
+    // base address = rs1
+    // 
     always_comb begin
         
     end
